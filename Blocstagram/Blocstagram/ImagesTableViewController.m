@@ -11,6 +11,7 @@
 #import "Media.h"
 #import "User.h"
 #import "Comment.h"
+#import "MediaTableViewCell.h"
 
 @interface ImagesTableViewController ()
 
@@ -39,7 +40,7 @@
 //        }
 //    }
     
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"imageCell"];
+    [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -62,38 +63,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    //step 1. Dequene...:forIndexPath takes identifier string and compares it with its roster fo registered table view cells. Registered UITableViewCell calss in viewDidLoad with identifier imageCell. Rreturns brand new cell or a used one that is no longer visible on screen
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"imageCell" forIndexPath:indexPath];
-    
     // Configure the cell...
-    
-    //step 2 Set imageViewTag to arb #. Just needs to remain consistent. NUmerical tag can be attached to any UIView and used later to recover it from its superview by invoking viewWithTag. Quick and dirty way to recover UIImageView which will host the image for this cell
-    static NSInteger imageViewTag = 1234;
-    UIImageView *imageView = (UIImageView*)[cell.contentView viewWithTag:imageViewTag];
-    
-    //#3 Handles when viewWithTag: fails to recover UIImageView. Means it didn't have one and is therefore a brand new cell. We know it's new since we plan to add a UIImageView to each cell we come across. It's contentMode calls out UIView... which menas the image will be stretched both hor and vert to fill the counds of UIImageView. Then we set its frame to be the same as the UITableView's contentView such that the image consumes the entirety of the cell
-    if (!imageView) {
-        //This is a new cell, it doesn't have an image view yet
-        imageView = [[UIImageView alloc] init];
-        imageView.contentMode = UIViewContentModeScaleToFill;
-        
-        imageView.frame = cell.contentView.bounds;
-        
-    //#4 Set the image view's auto-resizing property. autoresizingMask is associated with all UIView objects. This prop lets its superview know how to resize it when the superviews width of height changes. Set them by ORing them together using |  **CHECK CHECKPOINT 27 FOR RESIZE OPTIONS & EFFECT. THERE IS A GOOD DIAGRAM OF HOW THESE FLAGS AFFECT THEIR VIEWS!!!!!
-        imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight / UIViewAutoresizingFlexibleWidth;
-        
-    //Set tag of new UIImageView before we add it to contentView as a subView. Next time we dequeue with a tag of 1234 and our call to viewWithTag: will return a reference to that UIImageView
-        imageView.tag = imageViewTag;
-        [cell.contentView addSubview:imageView];
-    }
-    
-    //Removed the below code with the introduction of the other classes and new MVC design
-//    UIImage *image = self.images[indexPath.row];
-//    imageView.image = image;
-    
-    //Added the below
-    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
-    imageView.image = item.image;
+    MediaTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"mediaCell" forIndexPath:indexPath];
+    cell.mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
     
     return cell;
 }
@@ -103,19 +75,9 @@
 // Override to support conditional editing of the table view.
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    //Removed the below code with the introduction of the other classes and new MVC design
-    //UIImage *image = self.images[indexPath.row];
-    
-    //Added
     Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
-    UIImage *image = item.image;
     
-    return image.size.height / image.size.width * CGRectGetWidth(self.view.frame);
-    
-    //Removed from original
-    //Need to make sure the aspect ratio is currect so that the pic is sized correctly.
-    //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
-    //For best pic performance, reize the image objects themselves to exact size in which they'll be displayed. This is why photos in instagram are always the same size (612x612)
+    return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame)];
 }
 
 
