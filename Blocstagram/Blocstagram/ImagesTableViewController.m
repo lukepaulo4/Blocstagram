@@ -49,14 +49,18 @@
 
 #pragma mark - Table view data source
 
+//created this method so that can just use items for each spot where we have [DataSource sharedInstance].mediaItems to reduce the clutter. Nigga.
+- (NSArray *)items {
+    return [DataSource sharedInstance].mediaItems;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
     //Removed the below code with the introduction of the other classes and new MVC design
     //return self.images.count;
     
-    //Added the below
-    return [DataSource sharedInstance].mediaItems.count;
+    //Added the below.
+    return [self items].count;
 }
 
 
@@ -92,7 +96,7 @@
 //    imageView.image = image;
     
     //Added the below
-    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    Media *item = [self items][indexPath.row];
     imageView.image = item.image;
     
     return cell;
@@ -107,7 +111,7 @@
     //UIImage *image = self.images[indexPath.row];
     
     //Added
-    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    Media *item = [self items][indexPath.row];
     UIImage *image = item.image;
     
     return image.size.height / image.size.width * CGRectGetWidth(self.view.frame);
@@ -117,6 +121,7 @@
     //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
     //For best pic performance, reize the image objects themselves to exact size in which they'll be displayed. This is why photos in instagram are always the same size (612x612)
 }
+
 
 
 /*
