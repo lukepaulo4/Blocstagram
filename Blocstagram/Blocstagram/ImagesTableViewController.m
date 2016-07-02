@@ -7,9 +7,12 @@
 //
 
 #import "ImagesTableViewController.h"
+#import "DataSource.h"
+#import "Media.h"
+#import "User.h"
+#import "Comment.h"
 
 @interface ImagesTableViewController ()
-@property (nonatomic, strong) NSMutableArray *images;
 
 @end
 
@@ -18,8 +21,8 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
-        //Custom initialize
-        self.images = [NSMutableArray array];
+        //Removed the below code with the introduction of the other classes and new MVC design
+        //self.images = [NSMutableArray array];
     }
     return self;
 }
@@ -27,13 +30,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    for (int i = 1; i <= 10; i++) {
-        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-        UIImage *image = [UIImage imageNamed:imageName];
-        if (image) {
-            [self.images addObject:image];
-        }
-    }
+    //Removed the below code with the introduction of the other classes and new MVC design
+//    for (int i = 1; i <= 10; i++) {
+//        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
+//        UIImage *image = [UIImage imageNamed:imageName];
+//        if (image) {
+//            [self.images addObject:image];
+//        }
+//    }
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"imageCell"];
 }
@@ -48,7 +52,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    return self.images.count;
+    //Removed the below code with the introduction of the other classes and new MVC design
+    //return self.images.count;
+    
+    //Added the below
+    return [DataSource sharedInstance].mediaItems.count;
 }
 
 
@@ -79,8 +87,13 @@
         [cell.contentView addSubview:imageView];
     }
     
-    UIImage *image = self.images[indexPath.row];
-    imageView.image = image;
+    //Removed the below code with the introduction of the other classes and new MVC design
+//    UIImage *image = self.images[indexPath.row];
+//    imageView.image = image;
+    
+    //Added the below
+    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    imageView.image = item.image;
     
     return cell;
 }
@@ -90,9 +103,18 @@
 // Override to support conditional editing of the table view.
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UIImage *image = self.images[indexPath.row];
+    //Removed the below code with the introduction of the other classes and new MVC design
+    //UIImage *image = self.images[indexPath.row];
+    
+    //Added
+    Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+    UIImage *image = item.image;
+    
+    return image.size.height / image.size.width * CGRectGetWidth(self.view.frame);
+    
+    //Removed from original
     //Need to make sure the aspect ratio is currect so that the pic is sized correctly.
-    return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
+    //return (CGRectGetWidth(self.view.frame) / image.size.width) * image.size.height;
     //For best pic performance, reize the image objects themselves to exact size in which they'll be displayed. This is why photos in instagram are always the same size (612x612)
 }
 

@@ -24,6 +24,10 @@
 		00DC71751D277A4A005E439E /* 8.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 00DC716B1D277A4A005E439E /* 8.JPG */; };
 		00DC71761D277A4A005E439E /* 9.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 00DC716C1D277A4A005E439E /* 9.JPG */; };
 		00DC71771D277A4A005E439E /* 10.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 00DC716D1D277A4A005E439E /* 10.JPG */; };
+		00DC717A1D27A9F3005E439E /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC71791D27A9F3005E439E /* User.m */; };
+		00DC717D1D27AB28005E439E /* Media.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC717C1D27AB28005E439E /* Media.m */; };
+		00DC71801D27AF38005E439E /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC717F1D27AF38005E439E /* Comment.m */; };
+		00DC71831D27B043005E439E /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC71821D27B043005E439E /* DataSource.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +73,14 @@
 		00DC716B1D277A4A005E439E /* 8.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 8.JPG; sourceTree = "<group>"; };
 		00DC716C1D277A4A005E439E /* 9.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 9.JPG; sourceTree = "<group>"; };
 		00DC716D1D277A4A005E439E /* 10.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 10.JPG; sourceTree = "<group>"; };
+		00DC71781D27A9F3005E439E /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		00DC71791D27A9F3005E439E /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		00DC717B1D27AB28005E439E /* Media.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
+		00DC717C1D27AB28005E439E /* Media.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Media.m; sourceTree = "<group>"; };
+		00DC717E1D27AF38005E439E /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
+		00DC717F1D27AF38005E439E /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
+		00DC71811D27B043005E439E /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
+		00DC71821D27B043005E439E /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +136,14 @@
 				00DC711D1D23937F005E439E /* AppDelegate.m */,
 				00DC71611D239C31005E439E /* ImagesTableViewController.h */,
 				00DC71621D239C31005E439E /* ImagesTableViewController.m */,
+				00DC71781D27A9F3005E439E /* User.h */,
+				00DC71791D27A9F3005E439E /* User.m */,
+				00DC717B1D27AB28005E439E /* Media.h */,
+				00DC717C1D27AB28005E439E /* Media.m */,
+				00DC717E1D27AF38005E439E /* Comment.h */,
+				00DC717F1D27AF38005E439E /* Comment.m */,
+				00DC71811D27B043005E439E /* DataSource.h */,
+				00DC71821D27B043005E439E /* DataSource.m */,
 				00DC71251D23937F005E439E /* Assets.xcassets */,
 				00DC71271D23937F005E439E /* LaunchScreen.storyboard */,
 				00DC712A1D23937F005E439E /* Info.plist */,
@@ -314,7 +334,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00DC717A1D27A9F3005E439E /* User.m in Sources */,
+				00DC71801D27AF38005E439E /* Comment.m in Sources */,
+				00DC717D1D27AB28005E439E /* Media.m in Sources */,
 				00DC711E1D23937F005E439E /* AppDelegate.m in Sources */,
+				00DC71831D27B043005E439E /* DataSource.m in Sources */,
 				00DC711B1D23937F005E439E /* main.m in Sources */,
 				00DC71631D239C31005E439E /* ImagesTableViewController.m in Sources */,
 			);
