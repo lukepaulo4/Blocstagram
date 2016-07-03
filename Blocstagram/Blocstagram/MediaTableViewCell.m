@@ -25,6 +25,7 @@ static UIColor *usernameLabelGray;
 static UIColor *commentLabelGray;
 static UIColor *linkColor;
 static NSParagraphStyle *paragraphStyle;
+static UIColor *colorOrange;
 
 @implementation MediaTableViewCell
 
@@ -36,6 +37,7 @@ static NSParagraphStyle *paragraphStyle;
     usernameLabelGray = [UIColor colorWithRed:0.933 green:0.933 blue:0.933 alpha:1]; /*#eeeeee*/
     commentLabelGray = [UIColor colorWithRed:0.898 green:0.898 blue:0.898 alpha:1]; /*#e5e5e5*/
     linkColor = [UIColor colorWithRed:0.345 green:0.314 blue:0.427 alpha:1]; /*58506d*/
+    colorOrange = [UIColor orangeColor]; //ff8000
     
     NSMutableParagraphStyle *mutableParagraphStyle = [[NSMutableParagraphStyle alloc] init];
     mutableParagraphStyle.headIndent = 20.0;
@@ -47,6 +49,8 @@ static NSParagraphStyle *paragraphStyle;
 }
 
 - (NSAttributedString *) usernameAndCaptionString {
+    
+    //Increase kerning (character spacing) of image caption
     //#1
     CGFloat usernameFontSize = 15;
     
@@ -54,7 +58,8 @@ static NSParagraphStyle *paragraphStyle;
     NSString *baseString = [NSString stringWithFormat:@"%@ %@", self.mediaItem.user.userName, self.mediaItem.caption];
     
     //#3 - Make attributed string, with 'username' bold
-    NSMutableAttributedString *mutableUsernameAndCaptionString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : [lightFont fontWithSize:usernameFontSize], NSParagraphStyleAttributeName : paragraphStyle}];
+    NSMutableAttributedString *mutableUsernameAndCaptionString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : [lightFont fontWithSize:usernameFontSize], NSParagraphStyleAttributeName : paragraphStyle, NSKernAttributeName : @(1.4)}];
+    
     //#4
     NSRange usernameRange = [baseString rangeOfString:self.mediaItem.user.userName];
     [mutableUsernameAndCaptionString addAttribute:NSFontAttributeName value:[boldFont fontWithSize:usernameFontSize] range:usernameRange];
@@ -64,6 +69,7 @@ static NSParagraphStyle *paragraphStyle;
 }
 
 //This method will generate our comment attributed string
+//RETURN THE COLOR OF THE COMMENT TO ORANGE!!!!!!!!!
 - (NSAttributedString *) commentString {
     NSMutableAttributedString *commentString = [[NSMutableAttributedString alloc] init];
     
@@ -72,11 +78,12 @@ static NSParagraphStyle *paragraphStyle;
         NSString *baseString = [NSString stringWithFormat:@"%@ %@\n", comment.from.userName, comment.text];
         
         //Make atributed string with 'username' bold
-        NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle}];
+        NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle, NSForegroundColorAttributeName : colorOrange}];
         
         NSRange usernameRange = [baseString rangeOfString:comment.from.userName];
         [oneCommentString addAttribute:NSFontAttributeName value:boldFont range:usernameRange];
         [oneCommentString addAttribute:NSForegroundColorAttributeName value:linkColor range:usernameRange];
+        
         
         [commentString appendAttributedString:oneCommentString];
         
