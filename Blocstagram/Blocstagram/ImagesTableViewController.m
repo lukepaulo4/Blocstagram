@@ -34,7 +34,33 @@
     //Below we register for KVO of mediaItems
     [[DataSource sharedInstance] addObserver:self forKeyPath:@"mediaItems" options:0 context:nil];
     
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshControlDidFire:) forControlEvents:UIControlEventValueChanged];
+    
     [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
+}
+
+- (void) refreshControlDidFire:(UIRefreshControl *) sender {
+    [[DataSource sharedInstance] requestNewItemsWithCompletionHandler:^(NSError *error) {
+        [sender endRefreshing];
+    }];
+}
+
+- (void) infiniteScrollIfNecessary {
+    //#3 - Checks whether or not the user has scrolled to the last photo. This is accomplished by inspecting an array of NSIndexPath objects which represent the cells visible on the screen. We call lastObject on the NSArray returned by indexPathsForVisibleRows to recover the index path of the cell shown at the very bottom of the table. If that cell reps the last image in the _mediaItems array, we call requestOldItemsWithCompletionHandler: in order to recover more.
+    NSIndexPath *bottomIndexPath = [[self.tableView indexPathsForVisibleRows] lastObject];
+    
+    if (bottomIndexPath && bottomIndexPath.row == [DataSource sharedInstance].mediaItems.count -1) {
+        //The very last cell is on the screen
+        [[DataSource sharedInstance] requestOldItemsWithCompletionHandler:nil];
+    }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+//#4 UITableView is a subclass of UIScrollView. A scroll view is a UI element which scrolls. When its content size is larger than its frame, a pan gesture moves its content. A scroll view can be scrolled hor and/or vert. A table view is locked into vert only scrollage. Scroll view has a delegate protocol with many methods in it, one of which is scrollViewDidScroll. This delegate method is invoked when the scroll view is scrolled in any direction. As the user scrolls the table view, this method will be called repeatedly. It's a good place to check whether or not the last image in our array has made it onto the screen.
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self infiniteScrollIfNecessary];
 }
 
 //Observers must be removed when they're no longer needed. Dealloc smack smacks this. Dealloc is an NSObject method. Allows an object to perform some cleanup before the object goes away. This method is a class' last chance to do anything before 'self' disappears. We call removeObserver:forKeyPath here because once dealloc returns. ImagesTableViewController will no longer exist and therefore will not need the notifications. Forgetting to remove observers may result in a crash if the observed object attempts to communicate with an observer that no longer exists.

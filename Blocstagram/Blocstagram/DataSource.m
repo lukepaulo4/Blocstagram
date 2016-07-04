@@ -18,6 +18,10 @@
 
 @property (nonatomic, strong) NSArray *mediaItems;
 
+//Need BOOL property to track whether a refresh is already in progress so not fetching multiple times while waiting for a result from server
+@property (nonatomic, assign) BOOL isRefreshing;
+@property (nonatomic, assign) BOOL isLoadingOlderItems;
+
 @end
 
 @implementation DataSource
@@ -157,6 +161,50 @@
 - (void) deleteMediaItem:(Media *)item {
     NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
     [mutableArrayWithKVO removeObject:item];
+}
+
+#pragma mark - Completion Handler
+
+- (void) requestNewItemsWithCompletionHandler:(NewItemCompletionBlock)completionHandler {
+    //#1 Means if there isn't currently isRefreshing, we set it to YES then run the code.
+    if (self.isRefreshing == NO) {
+        self.isRefreshing = YES;
+        //#2 - Create new random media object and append it to the front of the KVC array. We place media item at index 0 because that is the index of the top-most table cell.
+        Media *media = [[Media alloc] init];
+        media.user = [self randomUser];
+        media.image = [UIImage imageNamed:@"10.jpg"];
+        media.caption = [self randomSentence];
+        
+        NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
+        [mutableArrayWithKVO insertObject:media atIndex:0];
+        
+        //Once done reset to NO so it's gucci and can reload again when needed and no longer refreshing.
+        self.isRefreshing = NO;
+        
+        //Check if a completion handler was passed before calling it with nil.
+        if (completionHandler) {
+            completionHandler(nil);
+        }
+    }
+}
+
+- (void) requestOldItemsWithCompletionHandler:(NewItemCompletionBlock)completionHandler {
+    if (self.isLoadingOlderItems == NO) {
+        self.isLoadingOlderItems = YES;
+        Media *media = [[Media alloc] init];
+        media.user = [self randomUser];
+        media.image = [UIImage imageNamed:@"1.jpg"];
+        media.caption = [self randomSentence];
+        
+        NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
+        [mutableArrayWithKVO addObject:media];
+        
+        self.isLoadingOlderItems = NO;
+        
+        if (completionHandler) {
+            completionHandler(nil);
+        }
+    }
 }
 
 @end
