@@ -11,14 +11,47 @@
 #import "Media.h"
 #import "Comment.h"
 
-@interface DataSource ()
+//Added the mutable array because it's a Key-Value Compliant req. An array must be accessible as an instance var name _<key> or by method -<key> which returns a reference to the array.
+@interface DataSource () {
+    NSMutableArray *_mediaItems;
+}
 
 @property (nonatomic, strong) NSArray *mediaItems;
 
 @end
-//This pattern states that this property can only be modified by the DataSource instance. Instances of other classes can only read from it.
 
 @implementation DataSource
+
+#pragma mark - Key/Value Observing
+
+//Add accessor methods which will allow observers to be notified when the content of the array changes.
+- (NSUInteger) countOfMediaItems {  //Required accessor method. Since countOf<key> you capitalize Media
+    return self.mediaItems.count;
+}
+
+- (id) objectInMediaItemsAtIndex:(NSUInteger)index {
+    return [self.mediaItems objectAtIndex:index];
+}
+
+- (NSArray *) mediaItemsAtIndexes:(NSIndexSet *)indexes {
+    return [self.mediaItems objectsAtIndexes:indexes];
+}
+
+//Next let's add mutable accessor methods. These are KVC methods which allow insertion and deletion of elements from mediaItems
+- (void) insertObject:(Media *)object inMediaItemsAtIndex:(NSUInteger)index {
+    [_mediaItems insertObject:object atIndex:index];
+}
+
+- (void) removeObjectFromMediaItemsAtIndex:(NSUInteger)index {
+    [_mediaItems removeObjectAtIndex:index];
+}
+
+- (void) replaceObjectInMediaItemsAtIndex:(NSUInteger)index withObject:(id)object {
+    [_mediaItems replaceObjectAtIndex:index withObject:object];
+}
+//Note in these three methods above we use the instance variable _mediaItems and not the property self.mediaItems. This is because the header file is declared as readonly, but in the implementation file, _mediaItems is mutable. If we tried tio write these methods using self.mediaItems, Xcode would mark those lines as syntax errors.
+
+
 
 +(instancetype) sharedInstance {
     static dispatch_once_t once;     //dispatch_once ensures we only create a single instance of this class
@@ -120,6 +153,11 @@
     return [NSString stringWithString:s];
 }
 
+//Need to use this way even we know DataSource has a reference to _mediaItems. We use mutableArrayValueForKey instead of modifying the _mediaItems array, because if we remove the item from our underlying data source without going through the KVC methods, no objects (including IMagesTableViewController) will receive a KVO notification.
+- (void) deleteMediaItem:(Media *)item {
+    NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
+    [mutableArrayWithKVO removeObject:item];
+}
 
 @end
 

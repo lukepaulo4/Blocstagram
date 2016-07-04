@@ -31,16 +31,56 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //Removed the below code with the introduction of the other classes and new MVC design
-//    for (int i = 1; i <= 10; i++) {
-//        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-//        UIImage *image = [UIImage imageNamed:imageName];
-//        if (image) {
-//            [self.images addObject:image];
-//        }
-//    }
+    //Below we register for KVO of mediaItems
+    [[DataSource sharedInstance] addObserver:self forKeyPath:@"mediaItems" options:0 context:nil];
     
     [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
+}
+
+//Observers must be removed when they're no longer needed. Dealloc smack smacks this. Dealloc is an NSObject method. Allows an object to perform some cleanup before the object goes away. This method is a class' last chance to do anything before 'self' disappears. We call removeObserver:forKeyPath here because once dealloc returns. ImagesTableViewController will no longer exist and therefore will not need the notifications. Forgetting to remove observers may result in a crash if the observed object attempts to communicate with an observer that no longer exists.
+- (void) dealloc {
+    [[DataSource sharedInstance] removeObserver:self forKeyPath:@"mediaItems"];
+}
+
+//Info about update will be found in the change dictionary. There are multiple kind of change that can occue. Read documentation to see more (Entire obj replaced, Added, Removed, Replaced within the collection)
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (object == [DataSource sharedInstance] && [keyPath isEqualToString:@"mediaItems"]) {
+        //We know mediaItems changed. Let's see what kind of change it is.
+        NSKeyValueChange kindOfChange = [change[NSKeyValueChangeKindKey] unsignedIntegerValue];
+        
+        if (kindOfChange == NSKeyValueChangeSetting) {
+            //Someone set a brand new images array
+            [self.tableView reloadData];
+        
+        } else if (kindOfChange == NSKeyValueChangeInsertion || kindOfChange == NSKeyValueChangeRemoval || kindOfChange == NSKeyValueChangeReplacement) {
+            //We have an incremental change: inserted, deleted, or replaced images
+            
+            //Get a list of the index (or indices) that changed
+            NSIndexSet *indexSetOfChanges = change[NSKeyValueChangeIndexesKey];
+            
+            //#1 - Convert this NSIndexSet to an NSArray of NSIndexPaths (which is what the table view animation methods require). Create and provide NSArray of NSIndexPath objects to update the table view's rows. All the rows are in a single section and are ordered by their location in the mediaItems array. Therefore we enumerate indexSetOfChanges and add to a brand new array, indexPathsThatChanged.
+            NSMutableArray *indexPathsThatChanged = [NSMutableArray array];
+            [indexSetOfChanges enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+                [indexPathsThatChanged addObject:newIndexPath];
+            }];
+            
+            //#2 - Call 'beginUpdates' to tell the table view we're about to make changes. Before we tell the table which rows have been altered, removed, or deleted, we prepare it for updates by calling beginUpdates.
+            [self.tableView beginUpdates];
+            
+            //Tell the table view what the changes are. The else if block checks to make sure that the changes which occured is one of the remaining: insert, remove, or replace. We recover NSIndexSet for each modified index. For ex, if images 2 and 3 were removed from mediaItems, those two values would be found in this set.
+            if (kindOfChange == NSKeyValueChangeInsertion) {
+                [self.tableView insertRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+            } else if (kindOfChange == NSKeyValueChangeRemoval) {
+                [self.tableView deleteRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+            } else if (kindOfChange == NSKeyValueChangeReplacement) {
+                [self.tableView reloadRowsAtIndexPaths:indexPathsThatChanged withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
+            
+            //Tell the table view that we're done telling it about changes, and to complete the animation
+            [self.tableView endUpdates];
+            }
+        }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -78,6 +118,16 @@
     Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
     
     return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame)];
+}
+
+//Implement the swip to delete action
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        //Delete the row from the data source
+        Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
+        [[DataSource sharedInstance] deleteMediaItem:item];
+    }
 }
 
 

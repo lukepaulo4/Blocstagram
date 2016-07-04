@@ -102,9 +102,15 @@ static NSParagraphStyle *paragraphStyle;
     CGSize commentLabelSize = [self.commentLabel sizeThatFits:maxSize];
     
     //Set the height constraints to that intrinsic number set above. This overwrites the previous 100 value set in the lower method that didn't use visual format string. If we didn't add the height constraints to the labels, the intrinsic height without the padding would automatically be used instead.
-    self.usernameAndCaptionLabelHeightConstraint.constant = usernameLabelSize.height +20;
-    self.commentLabelHeightConstraint.constant = commentLabelSize.height + 20;
-    self.imageHeightConstraint.constant = self.mediaItem.image.size.height / self.mediaItem.image.size.width * CGRectGetWidth(self.contentView.bounds);
+    self.usernameAndCaptionLabelHeightConstraint.constant = usernameLabelSize.height == 0 ? 0 : usernameLabelSize.height + 20;
+    self.commentLabelHeightConstraint.constant = commentLabelSize.height == 0 ? 0 : commentLabelSize.height + 20;
+    
+    //need to add this, becasue if self.mediaItem.image.size.width is zero, the calc will casue a divide-by-zero, which is illegal and will cause a crash
+    if (self.mediaItem.image.size.width > 0 && CGRectGetWidth(self.contentView.bounds) > 0) {
+        self.imageHeightConstraint.constant = self.mediaItem.image.size.height / self.mediaItem.image.size.width * CGRectGetWidth(self.contentView.bounds);
+    } else {
+        self.imageHeightConstraint.constant = 0;
+    }
     
     //Hide the line between cells
     self.separatorInset = UIEdgeInsetsMake(0, CGRectGetWidth(self.bounds)/2.0, 0, CGRectGetWidth(self.bounds)/2.0);
