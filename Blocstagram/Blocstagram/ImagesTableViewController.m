@@ -42,7 +42,7 @@
     [[DataSource sharedInstance] removeObserver:self forKeyPath:@"mediaItems"];
 }
 
-//Info about update will be found in the change dictionary. There are multiple kind of change that can occue. Read documentation to see more (Entire obj replaced, Added, Removed, Replaced within the collection)
+//Info about update will be found in the change dictionary. There are multiple kind of change that can occur. Read documentation to see more (Entire obj replaced, Added, Removed, Replaced within the collection)
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (object == [DataSource sharedInstance] && [keyPath isEqualToString:@"mediaItems"]) {
         //We know mediaItems changed. Let's see what kind of change it is.
@@ -120,13 +120,14 @@
     return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame)];
 }
 
-//Implement the swip to delete action
+//Implement the swipe to delete action.  ASSIGNMENT - UPDATE CODE SO THAT INSTEAD OF DELETING A CELL, SWIPE-TO-DELETE MOVES THAT CELL TO THE TOP.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         //Delete the row from the data source
         Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
         [[DataSource sharedInstance] deleteMediaItem:item];
+
     }
 }
 

@@ -19,6 +19,8 @@
 //Add this method (and the @class Media;) to DataSource to let other classes delete a media item.
 - (void) deleteMediaItem:(Media *)item;
 
+//Add one to allow for remove/replacing a media item.
+
 @end
 
 

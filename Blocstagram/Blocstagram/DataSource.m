@@ -157,9 +157,14 @@
 - (void) deleteMediaItem:(Media *)item {
     NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
     [mutableArrayWithKVO removeObject:item];
+    //This moves our deleted object to the top of our mutable array. 
+    [mutableArrayWithKVO insertObject:item atIndex:0];
 }
 
+
+
 @end
+
 
 
 
