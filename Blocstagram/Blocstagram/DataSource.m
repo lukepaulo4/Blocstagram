@@ -10,12 +10,14 @@
 #import "User.h"
 #import "Media.h"
 #import "Comment.h"
+#import "LoginViewController.h"
 
 //Added the mutable array because it's a Key-Value Compliant req. An array must be accessible as an instance var name _<key> or by method -<key> which returns a reference to the array.
 @interface DataSource () {
     NSMutableArray *_mediaItems;
 }
 
+@property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSArray *mediaItems;
 
 //Need BOOL property to track whether a refresh is already in progress so not fetching multiple times while waiting for a result from server
@@ -71,91 +73,63 @@
     self = [super init];
     
     if (self) {
-        [self addRandomData];
+        [self registerForAccessTokenNotification];
     }
     
     return self;
 }
 
-//This method does the following: 1. Loads every placeholder image in our app. 2. creates a Media model for it. 3. Attaches a randomly generated User to it. 4. Adds a random caption. 5. Attaches a randomly generated number of Comments to it. 6. Puts each media item into the mediaItems array.
-- (void) addRandomData {
-    NSMutableArray *randomMediaItems = [NSMutableArray array];
-    
-    for (int i = 1; i <=10; i++) {
-        NSString *imageName = [NSString stringWithFormat:@"%d.jpg", i];
-        UIImage *image = [UIImage imageNamed:imageName];
+- (void) populateDataWithParameters:(NSDictionary *) parameters {
+    if (self.accessToken) {
+        //only try to get the data if there's an access token
         
-        if (image) {
-            Media *media = [[Media alloc] init];
-            media.user = [self randomUser];
-            media.image = image;
-            media.caption = [self randomSentence];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            //do the network request in the background, so the UI doesn't lock up
             
-            //arc4random_uniform() returns a random, non-negative number less than the number supplied to it. We add 2 to the result (so all random data will have at least two characters), and use the result to create strings of random length and sentences of random word count.
-            NSUInteger commentCount = arc4random_uniform(10) + 2;
-            NSMutableArray *randomComments = [NSMutableArray array];
+            NSMutableString *urlString = [NSMutableString stringWithFormat:@"https://api.instagram.com/v1/users/self/media/recent?access_token=%@", self.accessToken];
             
-            for (int i = 0; i <= commentCount; i++) {
-                Comment *randomComment = [self randomComment];
-                [randomComments addObject:randomComment];
+            for (NSString *parameterName in parameters) {
+                //for ex, if dict contains {count:50}, append '&count=50' to the URL
+                [urlString appendFormat:@"&%@=%@", parameterName, parameters[parameterName]];
             }
             
-            media.comments = randomComments;
+            NSURL *url = [NSURL URLWithString:urlString];
             
-            [randomMediaItems addObject:media];
-            
+            if (url) {
+                NSURLRequest *request = [NSURLRequest requestWithURL:url];
+                
+                NSURLResponse *response;
+                NSError *webError;
+                NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&webError];
+                
+                if (responseData) {
+                    NSError *jsonError;
+                    NSDictionary *feedDictionary = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
+                    
+                    if (feedDictionary) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            //done networking, go back on the main thread
+                            [self parseDataFromFeedDictionary:feedDictionary fromRequestWithParameters:parameters];
+                        });
+                    }
+                }
             }
-        }
-    
-    self.mediaItems = randomMediaItems;
-}
-
-- (User *) randomUser {
-    User *user = [[User alloc] init];
-    
-    user.userName = [self randomStringOfLength:arc4random_uniform(10) + 2];
-    
-    NSString *firstName = [self randomStringOfLength:arc4random_uniform(7) + 2];
-    NSString *lastName = [self randomStringOfLength:arc4random_uniform(12) + 2];
-    user.fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
-    
-    return user;
-}
-
-- (Comment *) randomComment {
-    Comment *comment = [[Comment alloc] init];
-    
-    comment.from = [self randomUser];
-    comment.text = [self randomSentence];
-    
-    return comment;
-}
-
-- (NSString *) randomSentence {
-    NSUInteger wordCount = arc4random_uniform(20) + 2;
-    
-    NSMutableString *randomSentence = [[NSMutableString alloc] init];
-    
-    for (int i = 0; i <= wordCount; i++) {
-        NSString *randomWord = [self randomStringOfLength:arc4random_uniform(12) + 2];
-        [randomSentence appendFormat:@"%@ ", randomWord];
+        });
     }
-    
-    return randomSentence;
 }
 
-- (NSString *) randomStringOfLength:(NSUInteger) len {
-    NSString *alphabet = @"abcdefghijklmnopqrstuvwxyz";
-    
-    NSMutableString *s = [NSMutableString string];
-    for (NSUInteger i = 0U; i < len; i ++) {
-        u_int32_t r = arc4random_uniform((u_int32_t)[alphabet length]);
-        unichar c = [alphabet characterAtIndex:r];
-        [s appendFormat:@"%C", c];
-    }
-    
-    return [NSString stringWithString:s];
+- (void) registerForAccessTokenNotification {
+    [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+        self.accessToken = note.object;
+        //Got a token; populate the initial data
+        [self populateDataWithParameters:nil];
+    }];
 }
+
+- (void) parseDataFromFeedDictionary:(NSDictionary *) feedDictionary fromRequestWithParameters:(NSDictionary *)parameters {
+    NSLog(@"%@", feedDictionary);
+}
+
 
 //Need to use this way even we know DataSource has a reference to _mediaItems. We use mutableArrayValueForKey instead of modifying the _mediaItems array, because if we remove the item from our underlying data source without going through the KVC methods, no objects (including IMagesTableViewController) will receive a KVO notification.
 - (void) deleteMediaItem:(Media *)item {
@@ -170,15 +144,8 @@
     if (self.isRefreshing == NO) {
         self.isRefreshing = YES;
         //#2 - Create new random media object and append it to the front of the KVC array. We place media item at index 0 because that is the index of the top-most table cell.
-        Media *media = [[Media alloc] init];
-        media.user = [self randomUser];
-        media.image = [UIImage imageNamed:@"10.jpg"];
-        media.caption = [self randomSentence];
         
-        NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
-        [mutableArrayWithKVO insertObject:media atIndex:0];
-        
-        //Once done reset to NO so it's gucci and can reload again when needed and no longer refreshing.
+        //TODO: Add images
         self.isRefreshing = NO;
         
         //Check if a completion handler was passed before calling it with nil.
@@ -191,20 +158,18 @@
 - (void) requestOldItemsWithCompletionHandler:(NewItemCompletionBlock)completionHandler {
     if (self.isLoadingOlderItems == NO) {
         self.isLoadingOlderItems = YES;
-        Media *media = [[Media alloc] init];
-        media.user = [self randomUser];
-        media.image = [UIImage imageNamed:@"1.jpg"];
-        media.caption = [self randomSentence];
         
-        NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
-        [mutableArrayWithKVO addObject:media];
-        
+        //TODO: Add images
         self.isLoadingOlderItems = NO;
         
         if (completionHandler) {
             completionHandler(nil);
         }
     }
+}
+
++ (NSString *) instagramClientID {
+    return @"2481f86c2ea6461db672f40935e28d5f";
 }
 
 @end
