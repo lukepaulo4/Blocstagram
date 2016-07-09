@@ -13,6 +13,9 @@
 
 @property (nonatomic, weak) UIWebView *webView;
 
+//For assignment, create a property, configure, and add to view!!!!!!!!
+@property (nonatomic, strong) UIButton *backButton;
+
 @end
 
 @implementation LoginViewController
@@ -33,8 +36,20 @@ NSString *const LoginViewControllerDidGetAccessTokenNotification = @"LoginViewCo
     
     [self.view addSubview:webView];
     self.webView = webView;
-     
-     self.title = NSLocalizedString(@"Login", @"Login");
+    
+    //Assignment Add the back button
+    self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.backButton setEnabled:NO];
+    
+    [self.backButton setTitle:NSLocalizedString(@"BACK", @"Back command") forState:UIControlStateNormal];
+    [self.backButton addTarget:self.webView action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.backButton.frame = CGRectMake(CGRectGetMaxX(self.webView.frame), CGRectGetMaxY(self.webView.frame), 20, 20);
+    [self.view addSubview:self.backButton];
+    //Endage of code I believe...
+    
+    
+    self.title = NSLocalizedString(@"Login", @"Login");
     
     NSString *urlString = [NSString stringWithFormat:@"https://instagram.com/oauth/authorize/?client_id=%@&redirect_uri=%@&response_type=token", [DataSource instagramClientID], [self redirectURI]];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -44,6 +59,10 @@ NSString *const LoginViewControllerDidGetAccessTokenNotification = @"LoginViewCo
         [self.webView loadRequest:request];
     }
     
+}
+
+- (IBAction)backButtonClicked:(id)sender {
+    [self.webView goBack];
 }
 
 - (void) dealloc {
