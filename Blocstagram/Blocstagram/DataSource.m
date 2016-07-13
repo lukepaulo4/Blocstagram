@@ -11,12 +11,13 @@
 #import "Media.h"
 #import "Comment.h"
 #import "LoginViewController.h"
+//Quotes "" for importing local files, <> for importing external files. This below keychain is good for storing small amounts of privacy-critical data.
+#import <UICKeyChainStore.h>
 
 //Added the mutable array because it's a Key-Value Compliant req. An array must be accessible as an instance var name _<key> or by method -<key> which returns a reference to the array.
 @interface DataSource () {
     NSMutableArray *_mediaItems;
 }
-
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSArray *mediaItems;
 
@@ -76,11 +77,41 @@
     self = [super init];
     
     if (self) {
-        [self registerForAccessTokenNotification];
+        self.accessToken = [UICKeyChainStore stringForKey:@"access token"];
+        
+        if (!self.accessToken) {
+            [self registerForAccessTokenNotification];
+        } else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSString *fullPath = [self pathForFilename:NSStringFromSelector(@selector(mediaItems))];
+                NSArray *storedMediaItems = [NSKeyedUnarchiver unarchiveObjectWithFile:fullPath];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (storedMediaItems.count > 0) {
+                        NSMutableArray *mutableMediaItems = [storedMediaItems mutableCopy];
+                        
+                        [self willChangeValueForKey:@"mediaItems"];
+                        self.mediaItems = mutableMediaItems;
+                        [self didChangeValueForKey:@"mediaItems"];
+                        
+                        //#1
+                        for (Media* mediaItem in self.mediaItems) {
+                            [self downloadImageForMediaItem:mediaItem];
+                        }
+                        
+                    } else {
+                        [self populateDataWithParameters:nil completionHandler:nil];
+                    }
+                });
+            });
+        }
     }
     
     return self;
 }
+
+
+
 
 - (void) populateDataWithParameters:(NSDictionary *) parameters completionHandler:(NewItemCompletionBlock)completionHandler {
     if (self.accessToken) {
@@ -137,6 +168,7 @@
 - (void) registerForAccessTokenNotification {
     [[NSNotificationCenter defaultCenter] addObserverForName:LoginViewControllerDidGetAccessTokenNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
         self.accessToken = note.object;
+        [UICKeyChainStore setString:self.accessToken forKey:@"access token"];
         //Got a token; populate the initial data
         [self populateDataWithParameters:nil completionHandler:nil];
     }];
@@ -181,7 +213,33 @@
         self.mediaItems = tmpMediaItems;
         [self didChangeValueForKey:@"mediaItems"];
     }
+    //added this when added the below method to write to the file when new data arrives.
+    [self saveImages];
+}
+
+//New method to write to the file when new data arrives
+- (void) saveImages {
     
+    if (self.mediaItems.count > 0) {
+        //Write the changes to disk. Just like connecting to the Internet, reading or writing to disk can be slow. It's best to dispatch_async onto a background queue to do the file work you need.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSUInteger numberOfItemsToSave = MIN(self.mediaItems.count, 50);
+            
+            //After we're on a background queue, we make an NSArray containing the first 50 or fewer items(so we don't flood the user's hard drive). We convert this array into an NSData and save it to disk.
+            NSArray *mediaItemsToSave = [self.mediaItems subarrayWithRange:NSMakeRange(0, numberOfItemsToSave)];
+            NSString *fullPath = [self pathForFilename:NSStringFromSelector(@selector(mediaItems))];
+            NSData *mediaItemData = [NSKeyedArchiver archivedDataWithRootObject:mediaItemsToSave];
+            
+            NSError *dataError;
+            
+            //When we save to disk, we pass it two options: NSDataWritingAtomic & NSDataWritingFileProtectionCompletionUnlessOpen. You should always pass these two options unless there is a compellign reason not to. ...Atomic ensures a complete file is saved. Without it, we might corrupt our file if the app crashes while writing to disk.  ...UnlessOpen encrypts the data. This helps protect the user's privacy.
+            BOOL wroteSuccessfully = [mediaItemData writeToFile:fullPath options:NSDataWritingAtomic |NSDataWritingFileProtectionCompleteUnlessOpen error:&dataError];
+            
+            if (!wroteSuccessfully) {
+                NSLog(@"Couldn't write file: %@", dataError);
+            }
+        });
+    }
 }
 
 - (void) downloadImageForMediaItem:(Media *)mediaItem {
@@ -203,6 +261,10 @@
                         NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
                         NSUInteger index = [mutableArrayWithKVO indexOfObject:mediaItem];
                         [mutableArrayWithKVO replaceObjectAtIndex:index withObject:mediaItem];
+                        
+                        //Save the images when a download completes
+                        [self saveImages];
+                        
                     });
                 }
                 
@@ -219,6 +281,8 @@
     NSMutableArray *mutableArrayWithKVO = [self mutableArrayValueForKey:@"mediaItems"];
     [mutableArrayWithKVO removeObject:item];
 }
+
+
 
 #pragma mark - Completion Handler
 
@@ -272,7 +336,15 @@
     return @"2481f86c2ea6461db672f40935e28d5f";
 }
 
+//Now that objects conform to NSCoding, let's update DataSource to save files to disk and check for it at launch. Add method to create the full path to a file given a filename. This code will create a string containing an absolute path to the user's documents directory likd /somedir/someotherdir/filenmae. We'll write to the file when new data arrives. We do that by adding a new method called saveImages which we will call at the end of parseDataFromFeedDirectory:fromRequestWithParameters
+- (NSString *) pathForFilename:(NSString *) filename {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths firstObject];
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:filename];
+    return dataPath;
+}
+    
+
 @end
 
-
-
+    

@@ -12,7 +12,7 @@
 //Didn't import User for this one though ayyyyeeee :).....  OK Yes we did :(
 @class User;
 
-@interface Comment : NSObject
+@interface Comment : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSString *idNumber;
 
