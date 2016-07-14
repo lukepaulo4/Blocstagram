@@ -38,14 +38,8 @@ NSString *const LoginViewControllerDidGetAccessTokenNotification = @"LoginViewCo
     self.webView = webView;
     
     //Assignment Add the back button
-    self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.backButton setEnabled:NO];
-    
-    [self.backButton setTitle:NSLocalizedString(@"BACK", @"Back command") forState:UIControlStateNormal];
-    [self.backButton addTarget:self.webView action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.backButton.frame = CGRectMake(CGRectGetMaxX(self.webView.frame), CGRectGetMaxY(self.webView.frame), 20, 20);
-    [self.view addSubview:self.backButton];
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(backButtonClicked:)];
+    self.navigationItem.leftBarButtonItem = backButton;
     //Endage of code I believe...
     
     
