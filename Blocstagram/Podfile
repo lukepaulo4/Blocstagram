@@ -1,3 +1,4 @@
 source 'https://github.com/CocoaPods/Specs.git'
+target 'Blocstagram' do
 pod 'UICKeyChainStore'
-target 'Blocstagram'
+end
