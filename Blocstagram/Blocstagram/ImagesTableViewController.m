@@ -32,6 +32,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //Assignment. Add button to upper-right corner of full screen view controller that says "Share". When it's tapped, bring up the activity view controller.
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setTitle:@"Share" forState:UIControlStateNormal];
+    [button sizeToFit];
+    
+    //set a (x,y) point for the button's center
+    button.center = CGPointMake(350, 10);
+    
+    //Add action/target
+    [button addTarget:self action:@selector(buttonPressed:)
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:button];
+    
     //Below we register for KVO of mediaItems
     [[DataSource sharedInstance] addObserver:self forKeyPath:@"mediaItems" options:0 context:nil];
     
@@ -39,6 +53,13 @@
     [self.refreshControl addTarget:self action:@selector(refreshControlDidFire:) forControlEvents:UIControlEventValueChanged];
     
     [self.tableView registerClass:[MediaTableViewCell class] forCellReuseIdentifier:@"mediaCell"];
+}
+
+- (void)buttonPressed:(UIButton *)button {
+    NSMutableArray *itemsToShare = [NSMutableArray array];
+    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:itemsToShare applicationActivities:nil];
+    [self presentViewController:activityVC animated:YES completion:nil];
 }
 
 - (void) refreshControlDidFire:(UIRefreshControl *) sender {
@@ -162,6 +183,7 @@
         [self presentViewController:activityVC animated:YES completion:nil];
     }
 }
+
 
 
 // Override to support conditional editing of the table view.
