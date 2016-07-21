@@ -25,6 +25,8 @@
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
+@property (nonatomic, strong) UITapGestureRecognizer *tap2FingerGestureRecognizer;
+
 @end
 
 static UIFont *lightFont;
@@ -157,6 +159,10 @@ static NSParagraphStyle *paragraphStyle;
         self.longPressGestureRecognizer.delegate = self;
         [self.mediaImageView addGestureRecognizer:self.longPressGestureRecognizer];
         
+        self.tap2FingerGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doublePressFired:)];
+        self.tap2FingerGestureRecognizer.numberOfTouchesRequired = 2;
+        //[self.mediaImageView addGestureRecognizer:self.tap2FingerGestureRecognizer];
+        
         self.usernameAndCaptionLabel = [[UILabel alloc] init];
         self.usernameAndCaptionLabel.numberOfLines = 0;
         self.usernameAndCaptionLabel.backgroundColor = usernameLabelGray;
@@ -209,6 +215,14 @@ static NSParagraphStyle *paragraphStyle;
     if (sender.state == UIGestureRecognizerStateBegan) {
         [self.delegate cell:self didLongPressImageView:self.mediaImageView];
     }
+}
+
+- (void) doublePressFired:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self.mediaImageView reloadInputViews];
+    }
+        
+    
 }
 
 #pragma mark - UIGestureRecognizerDelegate
