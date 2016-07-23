@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
+#import "LikeButton.h"
 
 //Track which media items have been downloaded, and which still need to be downloaded. Start by declaring an enumeration in Media.h.  typedef NS_ENUM delcares MediaDownloadState as equivalent to NSInteger, with four predefined values. Now MediaDownloadState can theoretically be used anywhere as NSInteger
 typedef NS_ENUM(NSInteger, MediaDownloadState) {
@@ -33,6 +34,9 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) NSArray *comments;
+
+//Add property to keep the media item's state
+@property (nonatomic, assign) LikeState likeState;
 
 - (instancetype) initWithDictionary:(NSDictionary *)mediaDictionary;
 

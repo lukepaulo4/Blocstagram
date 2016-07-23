@@ -163,6 +163,21 @@
     }
 }
 
+//Connect the cell to the new data source method. Both the completion handler and at the end of the method, we set cell.mediaItem, which updates the button's appearance
+- (void) cellDidPressLikeButton:(MediaTableViewCell *)cell {
+    Media *item = cell.mediaItem;
+    
+    [[DataSource sharedInstance] toggleLikeOnMediaItem:item withCompletionHandler:^{
+        
+        //This is important because table views reload cells. If the user scrolls and the cell is reused to display a different media item, we no longer want to update the button
+        if (cell.mediaItem == item) {
+            cell.mediaItem = item;
+        }
+    }];
+    
+    cell.mediaItem = item;
+}
+
 - (void) tableView:(UITableView *)tableView willDisplaceyCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     Media *mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
     if (mediaItem.downloadState == MediaDownloadStateNeedsImage) {

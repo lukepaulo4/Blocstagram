@@ -10,6 +10,7 @@
 #import "Media.h"
 #import "Comment.h"
 #import "User.h"
+#import "LikeButton.h"
 
 @interface MediaTableViewCell () <UIGestureRecognizerDelegate>
 
@@ -24,6 +25,9 @@
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGestureRecognizer;
+
+//Create property for LikeButton
+@property (nonatomic, strong) LikeButton *likeButton;
 
 @end
 
@@ -139,6 +143,9 @@ static NSParagraphStyle *paragraphStyle;
     self.mediaImageView.image = _mediaItem.image;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
+    
+    //Display correct state on the button
+    self.likeButton.likeButtonState = mediaItem.likeState;
 }
 
 //Initialize 3 subviews and add them to self.contentView NOTE** One key difference between subclassing UIView and UITableViewCell, in table cell we don't add subviews to self, we add them to self.contentView
@@ -165,18 +172,23 @@ static NSParagraphStyle *paragraphStyle;
         self.commentLabel.numberOfLines = 0;
         self.commentLabel.backgroundColor = commentLabelGray;
         
-        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel]) {
+        //In initializer: create button, add to hierarchy, update the layout constraints with its location
+        self.likeButton = [[LikeButton alloc] init];
+        [self.likeButton addTarget:self action:@selector(likePressed:) forControlEvents:UIControlEventTouchUpInside];
+        self.likeButton.backgroundColor = usernameLabelGray;
+        
+        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {
             [self.contentView addSubview:view];
             //translatesAtuto... below converts auto-resizing mask into constraints. Set to NO when working with auto-layout
             view.translatesAutoresizingMaskIntoConstraints = NO;
         }
         
         //These first contraints use 'visual format string' which lets you 'draw' a rough outline of your views using only the keyboard characters
-        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel);
+        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton);
         
         //each visual format string should begin with H:(horizontal) or V:(vertical). | represents the superview and the [someName] represents one view.    H:|[_mediaImageView]| (and the next two with usernameAnd.. commentLabel)means that _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too.
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
         
         //V:|[_media..][_username...][_comment...] means the three views should be stacked vertically, from the top, with no space in between. Notice there is no | at the end to signify the relation to the superview.
@@ -196,6 +208,13 @@ static NSParagraphStyle *paragraphStyle;
         [self.contentView addConstraints:@[self.imageHeightConstraint, self.usernameAndCaptionLabelHeightConstraint, self.commentLabelHeightConstraint]];
     }
     return self;
+}
+
+#pragma mark = Liking
+
+//When the button is tapped, inform the delegate
+- (void) likePressed:(UIButton *)sender {
+    [self.delegate cellDidPressLikeButton:self];
 }
 
 #pragma mark - Image View

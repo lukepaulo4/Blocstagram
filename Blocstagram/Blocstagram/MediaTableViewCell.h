@@ -12,8 +12,12 @@
 
 @protocol MediaTableViewCellDelegate <NSObject>
 
+
 - (void) cell:(MediaTableViewCell *)cell didTapImageView:(UIImageView *)imageView;
 - (void) cell:(MediaTableViewCell *)cell didLongPressImageView:(UIImageView *)imageView;
+
+//Delegate protocol, add a method indicating that the button was pressed
+- (void) cellDidPressLikeButton:(MediaTableViewCell *)cell;
 
 @end
 
