@@ -35,6 +35,7 @@ typedef void (^NewItemCompletionBlock)(NSError *error);
 
 //This method tells Instagram about the change, update teh Media object, and call completionHandler when it's finished.
 - (void) toggleLikeOnMediaItem:(Media *)mediaItem withCompletionHandler:(void (^)(void))completionHandler;
+- (void) commentOnMediaItem:(Media *)mediaItem withCommentText:(NSString *)commentText;
 
 + (NSString *) instagramClientID;
 

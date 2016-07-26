@@ -38,6 +38,9 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 //Add property to keep the media item's state
 @property (nonatomic, assign) LikeState likeState;
 
+//Add property to Media to store the comment as it's being written
+@property (nonatomic, strong) NSString *temporaryComment;
+
 - (instancetype) initWithDictionary:(NSDictionary *)mediaDictionary;
 
 @end
