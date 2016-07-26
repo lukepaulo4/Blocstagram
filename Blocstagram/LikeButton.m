@@ -86,6 +86,24 @@
     [self setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
 }
 
+#pragma mark - NSCoding
+
+
+- (instancetype) initWithCoder:(NSCoder *)aDecoder {
+    
+    self = [super init];
+    
+    if (self) {
+        self.likeButtonState = [aDecoder decodeIntForKey:NSStringFromSelector(@selector(likeButtonState))];
+    }
+    
+    return self;
+}
+
+- (void) encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeInt:self.likeButtonState forKey:NSStringFromSelector(@selector(likeButtonState))];
+}
+
 @end
 
 

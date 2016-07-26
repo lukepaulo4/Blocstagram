@@ -33,13 +33,14 @@
         
         //Create CAShapeLayer, a core animation layer made form a bezier path. Other layers can be made from other things, such as images.
         _circleLayer = [CAShapeLayer layer];
-        
+
+
         //Scale is 1.0 on regular screens, 2.0 on retina displays
         _circleLayer.contentsScale = [[UIScreen mainScreen] scale];
         _circleLayer.frame = rect;
         
         //Want clear center of circle so can see the heart.
-        _circleLayer.fillColor = [UIColor clearColor].CGColor;
+        _circleLayer.fillColor = [UIColor blackColor].CGColor;
         
         //Core animation classes use CGColorRef instead of UIColor, so we convert them using CGColor
         _circleLayer.strokeColor = self.strokeColor.CGColor;

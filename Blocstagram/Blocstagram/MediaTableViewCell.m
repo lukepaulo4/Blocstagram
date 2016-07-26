@@ -29,6 +29,9 @@
 //Create property for LikeButton
 @property (nonatomic, strong) LikeButton *likeButton;
 
+//Create property for label
+@property (nonatomic, strong) UILabel *likeCounter;
+
 @end
 
 static UIFont *lightFont;
@@ -37,6 +40,7 @@ static UIColor *usernameLabelGray;
 static UIColor *commentLabelGray;
 static UIColor *linkColor;
 static NSParagraphStyle *paragraphStyle;
+
 
 @implementation MediaTableViewCell
 
@@ -96,6 +100,28 @@ static NSParagraphStyle *paragraphStyle;
     return commentString;
 }
 
+//Add method that will increase the count or reduce it per the current state the button is in...
+- (NSAttributedString *) likeCounterNumber {
+    int *numberCounter = 0;
+    NSMutableAttributedString *likeCounterNumber = [[NSMutableAttributedString alloc] init];
+    
+    if (self.likeButton.state == LikeStateLiked) {
+        numberCounter++;
+    } else if (self.likeButton.state == LikeStateNotLiked) {
+        numberCounter--;
+    }
+
+    NSString *baseString = [NSString stringWithFormat:@"%ld", (long)numberCounter];
+    
+    NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle}];
+   
+    [likeCounterNumber appendAttributedString:oneCommentString];
+
+    
+    return likeCounterNumber;
+    
+}
+
 - (void) layoutSubviews {
     [super layoutSubviews];
     
@@ -111,6 +137,7 @@ static NSParagraphStyle *paragraphStyle;
     //Set the height constraints to that intrinsic number set above. This overwrites the previous 100 value set in the lower method that didn't use visual format string. If we didn't add the height constraints to the labels, the intrinsic height without the padding would automatically be used instead.
     self.usernameAndCaptionLabelHeightConstraint.constant = usernameLabelSize.height == 0 ? 0 : usernameLabelSize.height + 20;
     self.commentLabelHeightConstraint.constant = commentLabelSize.height == 0 ? 0 : commentLabelSize.height + 20;
+    
     
     //need to add this, becasue if self.mediaItem.image.size.width is zero, the calc will casue a divide-by-zero, which is illegal and will cause a crash
     if (self.mediaItem.image.size.width > 0 && CGRectGetWidth(self.contentView.bounds) > 0) {
@@ -138,11 +165,15 @@ static NSParagraphStyle *paragraphStyle;
     return CGRectGetMaxY(layoutCell.commentLabel.frame);
 }
 
+
 - (void) setMediaItem:(Media *)mediaItem {
     _mediaItem = mediaItem;
     self.mediaImageView.image = _mediaItem.image;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
+    
+    //Set the text of the label to read the number count...
+    self.likeCounter.attributedText = [self likeCounterNumber];
     
     //Display correct state on the button
     self.likeButton.likeButtonState = mediaItem.likeState;
@@ -177,18 +208,26 @@ static NSParagraphStyle *paragraphStyle;
         [self.likeButton addTarget:self action:@selector(likePressed:) forControlEvents:UIControlEventTouchUpInside];
         self.likeButton.backgroundColor = usernameLabelGray;
         
-        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton]) {
+        //Create label, update layout with its location
+        self.likeCounter = [[UILabel alloc] init];
+        self.likeCounter.numberOfLines = 0;
+        self.likeCounter.backgroundColor = commentLabelGray;
+        
+        
+        for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton, self.likeCounter]) {
             [self.contentView addSubview:view];
             //translatesAtuto... below converts auto-resizing mask into constraints. Set to NO when working with auto-layout
             view.translatesAutoresizingMaskIntoConstraints = NO;
+            
+
         }
         
         //These first contraints use 'visual format string' which lets you 'draw' a rough outline of your views using only the keyboard characters
-        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton);
+        NSDictionary *viewDictionary = NSDictionaryOfVariableBindings(_mediaImageView, _usernameAndCaptionLabel, _commentLabel, _likeButton, _likeCounter);
         
         //each visual format string should begin with H:(horizontal) or V:(vertical). | represents the superview and the [someName] represents one view.    H:|[_mediaImageView]| (and the next two with usernameAnd.. commentLabel)means that _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too.
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeCounter(==42)][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
         
         //V:|[_media..][_username...][_comment...] means the three views should be stacked vertically, from the top, with no space in between. Notice there is no | at the end to signify the relation to the superview.
@@ -216,6 +255,7 @@ static NSParagraphStyle *paragraphStyle;
 - (void) likePressed:(UIButton *)sender {
     [self.delegate cellDidPressLikeButton:self];
 }
+
 
 #pragma mark - Image View
 
