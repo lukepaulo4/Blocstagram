@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, strong) UIButton *button;
 
+
 @end
 
 @implementation ComposeCommentView
@@ -115,7 +116,7 @@
 #pragma mark
 
 //When the button is tapped, we want to do one of the two things: 1. If the user hasn't started writing, bring up the keyboard. 2. If the user is done writing, send the comment to the API
-- (void) commentButtonPressed:(UIButton *) sender {
+- (void)commentButtonPressed:(UIButton *) sender {
     if (self.isWritingComment) {
         [self.textView resignFirstResponder];
         self.textView.userInteractionEnabled = NO;
@@ -148,5 +149,38 @@
     
     return YES;
 }
+
+//Assignment - Add a dope ass method to display realistic, lively, physics-based motion. Yee
+- (void)animateTextView:(UIView*)view {
+    
+    if (self.isWritingComment) {
+    
+    [UIView animateWithDuration:1.0
+                          delay:0.0
+         usingSpringWithDamping:0.25
+          initialSpringVelocity:1.0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^ {
+                         [self textView].alpha = 0.8;
+                     }
+                     completion:nil];
+    }
+}
+
+//- (void)animateButton:(UIView*)view {
+//    
+//    if (self.commentButtonPressed) {
+//    
+//    [UIView animateWithDuration:1.0
+//                          delay:0.0
+//         usingSpringWithDamping:0.25
+//          initialSpringVelocity:1.0
+//                        options:UIViewAnimationOptionCurveEaseInOut
+//                     animations:^ {
+//                         self.button.layer.transform = CATransform3DIdentity;
+//                     }
+//                     completion:nil];
+//    }
+//}
 
 @end
