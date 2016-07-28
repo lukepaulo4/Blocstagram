@@ -32,6 +32,7 @@
 //Create property for label
 @property (nonatomic, strong) UILabel *likeCounter;
 
+
 @end
 
 static UIFont *lightFont;
@@ -100,27 +101,27 @@ static NSParagraphStyle *paragraphStyle;
     return commentString;
 }
 
-//Add method that will increase the count or reduce it per the current state the button is in...
-- (NSAttributedString *) likeCounterNumber {
-    int *numberCounter = 0;
-    NSMutableAttributedString *likeCounterNumber = [[NSMutableAttributedString alloc] init];
-    
-    if (self.likeButton.state == LikeStateLiked) {
-        numberCounter++;
-    } else if (self.likeButton.state == LikeStateNotLiked) {
-        numberCounter--;
-    }
-
-    NSString *baseString = [NSString stringWithFormat:@"%ld", (long)numberCounter];
-    
-    NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle}];
-   
-    [likeCounterNumber appendAttributedString:oneCommentString];
-
-    
-    return likeCounterNumber;
-    
-}
+//Add method that will increase the count or reduce it per the current state the button is in... Maybe this ISH in the wrong class???!?!?!
+//- (NSAttributedString *) likeCounterNumber {
+//    int numberCounter = 0;
+//    NSMutableAttributedString *likeCounterNumber = [[NSMutableAttributedString alloc] init];
+//    
+//    if (self.likeButton.state == LikeStateLiking) {
+//        numberCounter++;
+//    }
+//    
+//    //NSLog(@"has %ld likes",(long)mediaDictionary[@"likes"][@"count"]);
+//
+//    NSString *baseString = [NSString stringWithFormat:@"%ld", (long)numberCounter];
+//    
+//    NSMutableAttributedString *oneCommentString = [[NSMutableAttributedString alloc] initWithString:baseString attributes:@{NSFontAttributeName : lightFont, NSParagraphStyleAttributeName : paragraphStyle}];
+//   
+//    [likeCounterNumber appendAttributedString:oneCommentString];
+//
+//    
+//    return likeCounterNumber;
+//    
+//}
 
 - (void) layoutSubviews {
     [super layoutSubviews];
@@ -171,12 +172,24 @@ static NSParagraphStyle *paragraphStyle;
     self.mediaImageView.image = _mediaItem.image;
     self.usernameAndCaptionLabel.attributedText = [self usernameAndCaptionString];
     self.commentLabel.attributedText = [self commentString];
-    
-    //Set the text of the label to read the number count...
-    self.likeCounter.attributedText = [self likeCounterNumber];
+
     
     //Display correct state on the button
     self.likeButton.likeButtonState = mediaItem.likeState;
+    
+    //Display correct state in label
+    self.likeCounter.attributedText = [self likeCounterString];
+}
+
+//Make the label string!
+- (NSAttributedString *)likeCounterString {
+    CGFloat likerFontSize = 20;
+    
+    NSString *string = [NSString stringWithFormat:@"%ld", (long)self.mediaItem.likeCount];
+    
+    NSMutableAttributedString *mutableLikerLabelString = [[NSMutableAttributedString alloc] initWithString:string attributes:@{NSFontAttributeName : [lightFont fontWithSize:likerFontSize], NSParagraphStyleAttributeName : paragraphStyle}];
+    
+    return mutableLikerLabelString;
 }
 
 //Initialize 3 subviews and add them to self.contentView NOTE** One key difference between subclassing UIView and UITableViewCell, in table cell we don't add subviews to self, we add them to self.contentView
@@ -212,6 +225,7 @@ static NSParagraphStyle *paragraphStyle;
         self.likeCounter = [[UILabel alloc] init];
         self.likeCounter.numberOfLines = 0;
         self.likeCounter.backgroundColor = commentLabelGray;
+        self.likeCounter.attributedText = [[NSAttributedString alloc] initWithString:@"" attributes:nil];
         
         
         for (UIView *view in @[self.mediaImageView, self.usernameAndCaptionLabel, self.commentLabel, self.likeButton, self.likeCounter]) {
@@ -227,7 +241,7 @@ static NSParagraphStyle *paragraphStyle;
         
         //each visual format string should begin with H:(horizontal) or V:(vertical). | represents the superview and the [someName] represents one view.    H:|[_mediaImageView]| (and the next two with usernameAnd.. commentLabel)means that _mediaImageView's leading edge is equal to the content view's leading edge. Their trailing edges are equal too.
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_mediaImageView]|" options:kNilOptions metrics:nil views:viewDictionary]];
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeCounter(==42)][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_usernameAndCaptionLabel][_likeCounter(==25)][_likeButton(==38)]|" options:NSLayoutFormatAlignAllTop | NSLayoutFormatAlignAllBottom metrics:nil views:viewDictionary]];
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_commentLabel]|" options:kNilOptions metrics:nil views:viewDictionary]];
         
         //V:|[_media..][_username...][_comment...] means the three views should be stacked vertically, from the top, with no space in between. Notice there is no | at the end to signify the relation to the superview.

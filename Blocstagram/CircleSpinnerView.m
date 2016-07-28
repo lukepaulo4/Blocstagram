@@ -40,7 +40,7 @@
         _circleLayer.frame = rect;
         
         //Want clear center of circle so can see the heart.
-        _circleLayer.fillColor = [UIColor blackColor].CGColor;
+        _circleLayer.fillColor = [UIColor clearColor].CGColor;
         
         //Core animation classes use CGColorRef instead of UIColor, so we convert them using CGColor
         _circleLayer.strokeColor = self.strokeColor.CGColor;
@@ -60,7 +60,7 @@
         _circleLayer.mask = maskLayer;
         
         //specified in seconds
-        CFTimeInterval animationDuration = 1;
+        CFTimeInterval animationDuration = 5;
         
         //Smooth, linear animation, as opposed to easing in or out. Speed of animation stays the same.
         CAMediaTimingFunction *linearCurve = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
@@ -165,7 +165,7 @@
     if (self) {
         self.strokeThickness = 1;
         self.radius = 12;
-        self.strokeColor = [UIColor purpleColor];
+        self.strokeColor = [UIColor redColor];
     }
     return self;
 }

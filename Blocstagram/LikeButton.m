@@ -88,21 +88,24 @@
 
 #pragma mark - NSCoding
 
-
-- (instancetype) initWithCoder:(NSCoder *)aDecoder {
-    
-    self = [super init];
-    
-    if (self) {
-        self.likeButtonState = [aDecoder decodeIntForKey:NSStringFromSelector(@selector(likeButtonState))];
-    }
-    
-    return self;
-}
-
-- (void) encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeInt:self.likeButtonState forKey:NSStringFromSelector(@selector(likeButtonState))];
-}
+//Incorporate this with the other Media encode/decode stuff, not its own new one!
+//- (instancetype) initWithCoder:(NSCoder *)aDecoder {
+//    
+//    self = [super init];
+//    
+//    
+//    NSString *likeStateString = [NSString stringWithFormat:@"%ld", (long)likeState];
+//    
+//    if (self) {
+//        self.likeStateString = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(likeButtonState))];
+//    }
+//    
+//    return self;
+//}
+//
+//- (void) encodeWithCoder:(NSCoder *)aCoder {
+//    [aCoder encodeObject:self.likeStateString forKey:NSStringFromSelector(@selector(likeButtonState))];
+//}
 
 @end
 

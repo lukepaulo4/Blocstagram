@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 @property (nonatomic, strong) NSURL *mediaURL;
 @property (nonatomic, strong) UIImage *image;
 
+
 //Use assign not strong becasue MediaDownloadState (aka NSInteger) is a simple type, not an object.
 @property (nonatomic, assign) MediaDownloadState downloadState;
 
@@ -37,6 +38,9 @@ typedef NS_ENUM(NSInteger, MediaDownloadState) {
 
 //Add property to keep the media item's state
 @property (nonatomic, assign) LikeState likeState;
+
+//For assignment, keep taps on # of likes
+@property (nonatomic, assign) NSInteger likeCount;
 
 - (instancetype) initWithDictionary:(NSDictionary *)mediaDictionary;
 
