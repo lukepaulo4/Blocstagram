@@ -97,9 +97,15 @@
     _isWritingComment = isWritingComment;
     
     if (animated) {
-        [UIView animateWithDuration:0.2 animations:^{
-            [self layoutSubviews];
-        }];
+        [UIView animateWithDuration:1.0
+                              delay:0
+             usingSpringWithDamping:0.5
+              initialSpringVelocity:0.6
+                            options:UIViewAnimationOptionTransitionNone
+                         animations:^{
+                             [self layoutSubviews];
+                         }
+                         completion:nil];
     } else {
         [self layoutSubviews];
     }
@@ -150,37 +156,6 @@
     return YES;
 }
 
-//Assignment - Add a dope ass method to display realistic, lively, physics-based motion. Yee
-- (void)animateTextView:(UIView*)view {
-    
-    if (self.isWritingComment) {
-    
-    [UIView animateWithDuration:1.0
-                          delay:0.0
-         usingSpringWithDamping:0.25
-          initialSpringVelocity:1.0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^ {
-                         [self textView].alpha = 0.8;
-                     }
-                     completion:nil];
-    }
-}
 
-//- (void)animateButton:(UIView*)view {
-//    
-//    if (self.commentButtonPressed) {
-//    
-//    [UIView animateWithDuration:1.0
-//                          delay:0.0
-//         usingSpringWithDamping:0.25
-//          initialSpringVelocity:1.0
-//                        options:UIViewAnimationOptionCurveEaseInOut
-//                     animations:^ {
-//                         self.button.layer.transform = CATransform3DIdentity;
-//                     }
-//                     completion:nil];
-//    }
-//}
 
 @end
