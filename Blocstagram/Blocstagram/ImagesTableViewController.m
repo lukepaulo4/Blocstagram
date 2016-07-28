@@ -178,7 +178,7 @@
     cell.mediaItem = item;
 }
 
-- (void) tableView:(UITableView *)tableView willDisplaceyCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     Media *mediaItem = [DataSource sharedInstance].mediaItems[indexPath.row];
     if (mediaItem.downloadState == MediaDownloadStateNeedsImage) {
         [[DataSource sharedInstance] downloadImageForMediaItem:mediaItem];
