@@ -11,6 +11,9 @@
 		00CCBB6B1D431EBF001A803F /* CircleSpinnerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB6A1D431EBF001A803F /* CircleSpinnerView.m */; };
 		00CCBB6E1D432E2A001A803F /* LikeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB6D1D432E2A001A803F /* LikeButton.m */; };
 		00CCBB711D470B6D001A803F /* ComposeCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB701D470B6D001A803F /* ComposeCommentView.m */; };
+		00CCBB741D49D71B001A803F /* CameraToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB731D49D71B001A803F /* CameraToolbar.m */; };
+		00CCBB771D4B1DAE001A803F /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB761D4B1DAE001A803F /* CameraViewController.m */; };
+		00CCBB7A1D4B349A001A803F /* UIImage+ImageUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CCBB791D4B349A001A803F /* UIImage+ImageUtilities.m */; };
 		00DC711B1D23937F005E439E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC711A1D23937F005E439E /* main.m */; };
 		00DC711E1D23937F005E439E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DC711D1D23937F005E439E /* AppDelegate.m */; };
 		00DC71261D23937F005E439E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00DC71251D23937F005E439E /* Assets.xcassets */; };
@@ -63,6 +66,12 @@
 		00CCBB6D1D432E2A001A803F /* LikeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LikeButton.m; path = ../LikeButton.m; sourceTree = "<group>"; };
 		00CCBB6F1D470B6D001A803F /* ComposeCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComposeCommentView.h; path = ../ComposeCommentView.h; sourceTree = "<group>"; };
 		00CCBB701D470B6D001A803F /* ComposeCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComposeCommentView.m; path = ../ComposeCommentView.m; sourceTree = "<group>"; };
+		00CCBB721D49D71B001A803F /* CameraToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraToolbar.h; path = ../CameraToolbar.h; sourceTree = "<group>"; };
+		00CCBB731D49D71B001A803F /* CameraToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraToolbar.m; path = ../CameraToolbar.m; sourceTree = "<group>"; };
+		00CCBB751D4B1DAE001A803F /* CameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraViewController.h; path = ../CameraViewController.h; sourceTree = "<group>"; };
+		00CCBB761D4B1DAE001A803F /* CameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraViewController.m; path = ../CameraViewController.m; sourceTree = "<group>"; };
+		00CCBB781D4B349A001A803F /* UIImage+ImageUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageUtilities.h"; sourceTree = "<group>"; };
+		00CCBB791D4B349A001A803F /* UIImage+ImageUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageUtilities.m"; sourceTree = "<group>"; };
 		00DC71161D23937F005E439E /* Blocstagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocstagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00DC711A1D23937F005E439E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		00DC711C1D23937F005E439E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -181,6 +190,12 @@
 				00CCBB6D1D432E2A001A803F /* LikeButton.m */,
 				00CCBB6F1D470B6D001A803F /* ComposeCommentView.h */,
 				00CCBB701D470B6D001A803F /* ComposeCommentView.m */,
+				00CCBB721D49D71B001A803F /* CameraToolbar.h */,
+				00CCBB731D49D71B001A803F /* CameraToolbar.m */,
+				00CCBB751D4B1DAE001A803F /* CameraViewController.h */,
+				00CCBB761D4B1DAE001A803F /* CameraViewController.m */,
+				00CCBB781D4B349A001A803F /* UIImage+ImageUtilities.h */,
+				00CCBB791D4B349A001A803F /* UIImage+ImageUtilities.m */,
 				00DC71251D23937F005E439E /* Assets.xcassets */,
 				00DC71271D23937F005E439E /* LaunchScreen.storyboard */,
 				00DC712A1D23937F005E439E /* Info.plist */,
@@ -439,18 +454,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00CCBB771D4B1DAE001A803F /* CameraViewController.m in Sources */,
 				00CCBB561D404C59001A803F /* MediaFullScreenViewController.m in Sources */,
 				00CCBB6B1D431EBF001A803F /* CircleSpinnerView.m in Sources */,
 				00DC717A1D27A9F3005E439E /* User.m in Sources */,
 				00DC71801D27AF38005E439E /* Comment.m in Sources */,
 				00DC71861D27C898005E439E /* MediaTableViewCell.m in Sources */,
 				00DC717D1D27AB28005E439E /* Media.m in Sources */,
+				00CCBB741D49D71B001A803F /* CameraToolbar.m in Sources */,
 				00DC711E1D23937F005E439E /* AppDelegate.m in Sources */,
 				00ECFC841D2B0B9900CFBEA6 /* LoginViewController.m in Sources */,
 				00CCBB6E1D432E2A001A803F /* LikeButton.m in Sources */,
 				00DC71831D27B043005E439E /* DataSource.m in Sources */,
 				00CCBB711D470B6D001A803F /* ComposeCommentView.m in Sources */,
 				00DC711B1D23937F005E439E /* main.m in Sources */,
+				00CCBB7A1D4B349A001A803F /* UIImage+ImageUtilities.m in Sources */,
 				00DC71631D239C31005E439E /* ImagesTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -587,6 +605,7 @@
 			baseConfigurationReference = 3EE3895A72976BE23D488786 /* Pods-Blocstagram.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = Blocstagram/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram;
@@ -599,6 +618,7 @@
 			baseConfigurationReference = 6A6F0716B04CBB0610A75E9A /* Pods-Blocstagram.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = Blocstagram/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram;
