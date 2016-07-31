@@ -9,6 +9,7 @@
 #import "ImageLibraryViewController.h"
 #import <Photos/Photos.h>
 #import "CropImageViewController.h"
+#import "CollectionViewCell.h"
 
 @interface ImageLibraryViewController ()
 
@@ -121,20 +122,23 @@ static NSString * const reuseIdentifier = @"Cell";
 //Given a section and a row (in the form of an NSIndexPath) we need to produce a UICollectionViewCell for the collection view to display on the screen. Ours will simply have one image view, which takes up the entire cell. To make scrolling smoother, we'll get the image asynchronously and update the cell's image view when it arrives. This is the same pattern we use when downloading images from Instagram - return cell as soon as possible, and then update it when the images arrives.
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    static NSInteger imageViewTag = 54321;
+//    static NSInteger imageViewTag = 54321;
+//    
+//    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+//    
+//    UIImageView *imageView = (UIImageView *)[cell.contentView viewWithTag:imageViewTag];
+//    
+//    if (!imageView) {
+//        imageView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
+//        imageView.tag = imageViewTag;
+//        imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+//        imageView.contentMode = UIViewContentModeScaleAspectFill;
+//        imageView.clipsToBounds = YES;
+//        [cell.contentView addSubview:imageView];
+//    }
     
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+    CollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     
-    UIImageView *imageView = (UIImageView *)[cell.contentView viewWithTag:imageViewTag];
-    
-    if (!imageView) {
-        imageView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
-        imageView.tag = imageViewTag;
-        imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.clipsToBounds = YES;
-        [cell.contentView addSubview:imageView];
-    }
     
     if (cell.tag != 0) {
         [[PHImageManager defaultManager] cancelImageRequest:(PHImageRequestID)cell.tag];
@@ -144,7 +148,7 @@ static NSString * const reuseIdentifier = @"Cell";
     PHAsset *asset = self.result[indexPath.row];
     
     cell.tag = [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:flowLayout.itemSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        UICollectionViewCell *cellToUpdate = [collectionView cellForItemAtIndexPath:indexPath];
+        CollectionViewCell *cellToUpdate = (CollectionViewCell*)[collectionView cellForItemAtIndexPath:indexPath];
         
         if (cellToUpdate) {
             UIImageView *imageView = (UIImageView *)[cellToUpdate.contentView viewWithTag:imageViewTag];

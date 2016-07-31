@@ -166,6 +166,8 @@
 
 //When the cell loads, we'll make sure there's an image view and a label on it, and we'll set their content from the appropriate arrays. We set the frames of these items based on the flow layout's itemSize property, which is set earlier in viewWillLayoutSubviews.
 - (UICollectionViewCell*) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     
     static NSInteger imageViewTag = 1000;
@@ -371,6 +373,35 @@
             [composite setValue:darkScratchesImage forKey:kCIInputBackgroundImageKey];
             
             [self addCIImageToCollectionView:composite.outputImage withFilterTitle:NSLocalizedString(@"Film", @"Film Filter")];
+        }
+    }];
+    
+    //Twirl Filter
+    [self.photoFilterOperationQueue addOperationWithBlock:^{
+        CIFilter *twirlFilter = [CIFilter filterWithName:@"CITwirlDistortion"];
+        
+        if (twirlFilter) {
+            [twirlFilter setValue:sourceCIImage forKey:kCIInputImageKey];
+            [self addCIImageToCollectionView:twirlFilter.outputImage withFilterTitle:NSLocalizedString(@"Twirl", @"Twirl Filter")];
+        }
+    }];
+    
+    //Combine this with teh
+    [self.photoFilterOperationQueue addOperationWithBlock:^{
+        CIFilter *warmFilter = [CIFilter filterWithName:@"CIPhotoEffectTransfer"];
+        CIFilter *twirlFilter = [CIFilter filterWithName:@"CITwirlDistortion"];
+        
+        if (warmFilter) {
+            [warmFilter setValue:sourceCIImage forKey:kCIInputImageKey];
+            
+            CIImage *result = warmFilter.outputImage;
+            
+            if (twirlFilter) {
+                [twirlFilter setValue:result forKey:kCIInputImageKey];
+                result = twirlFilter.outputImage;
+            }
+            
+            [self addCIImageToCollectionView:result withFilterTitle:NSLocalizedString(@" Twirl Warm", @"Twirl Warm Filter")];
         }
     }];
 
