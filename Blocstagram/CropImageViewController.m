@@ -11,10 +11,17 @@
 #import "Media.h"
 #import "UIImage+ImageUtilities.h"
 
+
 @interface CropImageViewController ()
 
 @property (nonatomic, strong) CropBox *cropBox;
 @property (nonatomic, assign) BOOL hasLoadedOnce;
+
+//We will just be using these for their unique translucent effect. Not for displaying small buttons (their typical use).
+@property (nonatomic, strong) UIToolbar *topView;
+@property (nonatomic, strong) UIToolbar *bottomView;
+
+
 
 @end
 
@@ -29,6 +36,10 @@
         self.media.image = sourceImage;
         
         self.cropBox = [CropBox new];
+        
+        //Initialize the toolbars
+        self.topView = [UIToolbar new];
+        self.bottomView = [UIToolbar new];
     }
     
     return self;
@@ -41,7 +52,16 @@
     
     self.view.clipsToBounds = YES;
     
+    UIColor *whiteBG = [UIColor colorWithWhite:1.0 alpha:.15];
+    self.topView.barTintColor = whiteBG;         //like background color, but translucent
+    self.bottomView.barTintColor = whiteBG;
+    self.topView.alpha = 0.5;
+    self.bottomView.alpha = 0.5;
+    
+    //Add the views....
     [self.view addSubview:self.cropBox];
+    [self.view addSubview:self.topView];
+    [self.view addSubview:self.bottomView];
     
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Crop", @"Crop command") style:UIBarButtonItemStyleDone target:self action:@selector(cropPressed:)];
     
@@ -68,6 +88,15 @@
     self.scrollView.frame = self.cropBox.frame;
     self.scrollView.clipsToBounds = NO;
     
+    //Make the frames for the translucent toolbar ya bish.
+    CGFloat width = CGRectGetWidth(self.view.bounds);
+    self.topView.frame = CGRectMake(0, 0, width, CGRectGetMinY(self.cropBox.frame));
+    
+    CGFloat yOriginOfBottomView = CGRectGetMaxY(self.topView.frame) + width;
+    CGFloat heightOfBottomView = CGRectGetHeight(self.view.frame) - yOriginOfBottomView;
+    self.bottomView.frame = CGRectMake(0, yOriginOfBottomView, width, heightOfBottomView);
+
+    
     [self recalculateZoomScale];
     
     if (self.hasLoadedOnce == NO) {
@@ -76,6 +105,8 @@
     }
     
 }
+
+
 
 - (void) cropPressed:(UIBarButtonItem *)sender {
     CGRect visibleRect;

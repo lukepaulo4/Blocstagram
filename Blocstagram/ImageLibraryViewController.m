@@ -49,18 +49,20 @@ static NSString * const reuseIdentifier = @"Cell";
 }
 
 //At layout time, we calculate the size of each cell. We want to fit as many as possible on each row, without going below 100 points. We don't put any spacing between cells, and we set our header to be 30 points high.
+
+//Assignment - Adjust colelction view flow layout's size and padding to better match the Photos app.
 - (void) viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
     CGFloat width = CGRectGetWidth(self.view.frame);
-    CGFloat minWidth = 100;
+    CGFloat minWidth = 50;
     NSInteger divisor = width / minWidth;
     CGFloat cellSize = width / divisor;
     
     UICollectionViewFlowLayout *flowLayout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
     flowLayout.itemSize = CGSizeMake(cellSize, cellSize);
-    flowLayout.minimumInteritemSpacing = 0;
-    flowLayout.minimumLineSpacing = 0;
+    flowLayout.minimumInteritemSpacing = 5;
+    flowLayout.minimumLineSpacing = 5;
 }
 
 //Load the assets
