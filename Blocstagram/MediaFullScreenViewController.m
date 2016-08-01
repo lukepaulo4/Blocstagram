@@ -14,6 +14,11 @@
 @property (nonatomic, strong) UITapGestureRecognizer *tap;
 @property (nonatomic, strong) UITapGestureRecognizer *doubleTap;
 
+//Need a property for outsideTap & for UIWindow!
+@property (nonatomic, strong) UITapGestureRecognizer *outsideTap;
+@property (nonatomic, strong) UIWindow *window;
+
+
 @end
 
 @implementation MediaFullScreenViewController
@@ -52,6 +57,10 @@
     self.doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapFired:)];
     self.doubleTap.numberOfTapsRequired = 2;
     
+    //Add the window and outsideTap
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.outsideTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(outsideTapFired:)];
+    
     //This allows one gesture recognizer to wait for another gest recog to fail before it succeeds. Without this line, it would be impossible to double-tap because the single tap gesture recognizer would fire before the user had a chance to tap twice.
     [self.tap requireGestureRecognizerToFail:self.doubleTap];
     
@@ -84,6 +93,18 @@
         // #9 - If the current zoom scale is larger then zoom out to the minimum scale
         [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
     
+    }
+}
+
+//Add a method for outsideTapFired. Set location of tap in the local view coordinate system. If it is out of it, get rid of the view. Yee
+- (void) outsideTapFired:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint pointLocation = [sender locationInView:nil];
+    
+        if (![self.view pointInside:[self.view convertPoint:pointLocation fromView:self.view.window] withEvent:nil]) {
+            [self.view.window removeGestureRecognizer:sender];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
     }
 }
 
