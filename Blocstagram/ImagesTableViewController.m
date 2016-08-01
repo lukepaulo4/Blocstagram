@@ -181,6 +181,12 @@
     
     if (imageVC) {
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:imageVC];
+        
+        //A popover presentation controller is a common tool used in horizontally regular environments for displaying information without hiding the primary view from teh user. It takes advantage of the plentiful screen space to provide additional context to the user.
+        nav.modalPresentationStyle = UIModalPresentationPopover;
+        UIPopoverPresentationController *popoverController = nav.popoverPresentationController;
+        popoverController.barButtonItem = sender;
+        
         [self presentViewController:nav animated:YES completion:nil];
     }
     
@@ -234,6 +240,11 @@
 
 - (void) cell:(MediaTableViewCell *)cell didTapImageView:(UIImageView *)imageView {
     MediaFullScreenViewController *fullScreenVC = [[MediaFullScreenViewController alloc] initWithMedia:cell.mediaItem];
+    
+    //On larger screens, the images won't usually be as high-resolution as the screen, so they shouldn't fill the entire screen. A good option is to present them using a "form sheet" view, which creates a medium-sized rectangle in the middle of the screen. All we need to do is set the presentation style to UIModalPresentat.. if the horizontal size class is regular.
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+        fullScreenVC.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     
     [self presentViewController:fullScreenVC animated:YES completion:nil];
 }
@@ -298,7 +309,7 @@
     
     Media *item = [DataSource sharedInstance].mediaItems[indexPath.row];
     
-    return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame)];
+    return [MediaTableViewCell heightForMediaItem:item width:CGRectGetWidth(self.view.frame) traitCollection:self.view.traitCollection];
 }
 
 //Implement the swip to delete action

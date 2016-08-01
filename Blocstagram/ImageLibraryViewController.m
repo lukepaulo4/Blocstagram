@@ -72,6 +72,9 @@ static NSString * const reuseIdentifier = @"Cell";
     
     //Result of feth is assigned to self.result
     self.result = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:options];
+    
+    //support the popover!
+    [self.collectionView reloadData];
 }
 
 //In viewWillAppear, we ask PHPhotoLibrary whether the user has already granted access to their photo library. If not, we request authorization. Once the user authorizes, we load the assets and reload the collection view on the main thread. If the user has already authorized, we just load the assets, there' not need to reload.
@@ -83,7 +86,6 @@ static NSString * const reuseIdentifier = @"Cell";
             if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self loadAssets];
-                    [self.collectionView reloadData];
                 });
             }
         }];

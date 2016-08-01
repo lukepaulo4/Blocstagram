@@ -31,8 +31,10 @@
 //add a public readonly property for the comment view and a similar stopComposingComment method
 @property (nonatomic, strong, readonly) ComposeCommentView *commentView;
 
+@property (nonatomic, strong) UITraitCollection *overrideTraitCollection;
+
 //the + signifies that this method does not belong to an instance of that object, it belongs to that clas. It's kind of like static variables we declared earlier which belong to all instances except we've declared it in the header so that any other class may use it. Invoke it like so ---- [MediaTableViewCell heightForMediaItem:someItem width:320];
-+ (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width;
++ (CGFloat) heightForMediaItem:(Media *)mediaItem width:(CGFloat)width traitCollection:(UITraitCollection *) traitCollection;
 
 - (void) stopComposingComment;
 
