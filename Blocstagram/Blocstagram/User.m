@@ -5,6 +5,7 @@
 //  Created by Luke Paulo on 7/2/16.
 //  Copyright © 2016 Bloc. All rights reserved.
 //
+//More comments to check!
 
 #import "User.h"
 
