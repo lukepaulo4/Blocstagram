@@ -357,7 +357,7 @@
 				TargetAttributes = {
 					00DC71151D23937F005E439E = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = U5L5YPF9GQ;
+						DevelopmentTeam = 4UJ46XA4Z7;
 					};
 					00DC712E1D23937F005E439E = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -638,7 +638,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blocstagram/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram.ClassProject;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -652,7 +652,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Blocstagram/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Bloc.Blocstagram.ClassProject;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
